@@ -11,7 +11,7 @@ s: .string "%s, %s, %d, %d\n"
 .global pstrijcmp
  
 
-
+###########################################################################
 .type 	pstrlen, @function
 pstrlen: 							# option 50
 	xorq %rsi, %rsi				#init RSI
@@ -19,7 +19,7 @@ pstrlen: 							# option 50
 	xorq %rax, %rax			#inition RAX
 	movb %sil, %al				#take RSI to RAX to return value.
 	ret
-	
+	###########################################################################
 .type 	replaceChar, @function
 replaceChar:				 		#option 51
 											# RDI=pstr. RSI (SIL)=old char. RDX(DL)=new char. 
@@ -39,7 +39,7 @@ replaceChar:				 		#option 51
 .endReplacing:
 	movq %rdi, %rax			#move the and to RAX
 	ret
-
+###########################################################################
 .type 	pstrijcpy, @function
 pstrijcpy: 					#option 52
 			#pstr1 in RDI, pstr2 in RSI, i in EDX, j in ECX
@@ -64,38 +64,39 @@ pstrijcpy: 					#option 52
 	
 	movq %rdi, %rax					#preper return
     ret	
-
+###########################################################################
+.type 	swapCase, @function
 swapCase: 							#option 53
+											#pstr in RDI
+	xorq %r8, %r8
 	movq $0, %r8					#inition r8 to i=0
-.loop3:
-	incq %r8							#i++
-	movb (%rdi,%r8), %cl		#take pstr[i] to cl (rcx). i=0 is the len.
+.loopb:
+										
+	addq $1,%r8						#i++
+	movb (%r8,%rdi), %cl		#take pstr[i] to cl (rcx). i=0 is the len.
 	cmpb $0, %cl					#check if our char is "\0" (=end of word)
-	je .endReplacing2				#if yes -> jump to end
+	je .endReplacingb				#if yes -> jump to end
 	cmpb $65, %cl					#if 'A'<= our char
 	jge .ifbig
-	jmp .loop3
+	jmp .loopb
 .ifbig:
 	cmpb $90, %cl					#if 'Z'>our char
 	jle .bigCase
 	cmp $122, %cl					#if 'z'>out char
 	jle .litCase
-	jmp .loop3							#our char isnt from the ABC or abc
+	jmp .loopb							#our char isnt character in english
 	
 .bigCase:
-	addb $32,%cl					#cl+=32 (big to little casting)
-	movb %cl, (%rdi,%r8)		# rdi[i]= new cl
-	jmp .loop3
-	
+	addq $32,	(%r8,%rdi)		#	rdi[i]+=32 (big to little casting)
+	jmp .loopb
 .litCase:
-	subb	$32, %cl 					#cl-=32 (little to big casting)
-	movb %cl, (%rdi,%r8)			# rdi[i]= new cl
-	jmp .loop3
-	
-.endReplacing2:
+	subq	$32, (%r8,%rdi)		#rdi[i]-=32 (little to big casting)
+	jmp .loopb
+.endReplacingb:
+	xorq %rax, %rax
 	movq %rdi, %rax				#move the anster to RAX
     ret	
-
+###########################################################################
 pstrijcmp: 					#option 54
 	
     ret	

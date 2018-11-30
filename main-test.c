@@ -15,49 +15,20 @@ char c[]= "HELLO";
 	*(p1.str+3)=c[3];
 	*(p1.str+4)=c[4];
 	*(p1.str+5)=0;
-	//*(p1.str+5)=0;
-
 	p1.len = 5;
 
-	// initialize second pstring
-	//len='3';
-	//scanf("%s", p2.str);
-	char c2[]= "WORLD";
-	p2.len = 5;
+
+	
+	char c2[]= "WORL";
 	*(p2.str)=c2[0];
 	*(p2.str+1)=c2[1];
 	*(p2.str+2)=c2[2];
 	*(p2.str+3)=c2[3];
-	*(p2.str+4)=c2[4];
-	*(p2.str+5)=0;
-	
-
-	/*char* a="aviel";
-	a[0]='a';a[1]='b';a[2]='c';a[3]='d';a[4]='e';
-	*(p2.str)=a[0];
-	*(p2.str+1)=a[1];
-	*(p2.str+2)=a[2];
-	*(p2.str+3)=a[3];
-	*(p2.str+4)=a[4];
-	*(p2.str+5)=0;
-	//*(p2.str)='A';
-	//*(p2.str+1)='v';
-	//*(p2.str+2)='i';
-	//*(p2.str+3)=0;
-	*/
-	p2.len = 5;
-	
-	
-	
-	// initialize first pstring
-	//len=5;
-	//scanf("%s", p1.str);
+	*(p2.str+4)=0;
+		p2.len = 4;
 
 	
 
-
-
-	// select which function to run
 	opt=53;
 	run_func(opt, &p1, &p2);
 
