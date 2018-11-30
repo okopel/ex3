@@ -8,7 +8,7 @@ int main() {
 	char len;
 	int opt;
 
-char c[]= "HELLO";
+char c[]= "abcde";
 	*(p1.str)=c[0];
 	*(p1.str+1)=c[1];
 	*(p1.str+2)=c[2];
@@ -19,7 +19,7 @@ char c[]= "HELLO";
 
 
 	
-	char c2[]= "WORL";
+	char c2[]= "fghi";
 	*(p2.str)=c2[0];
 	*(p2.str+1)=c2[1];
 	*(p2.str+2)=c2[2];
@@ -29,7 +29,7 @@ char c[]= "HELLO";
 
 	
 
-	opt=53;
+	opt=54;
 	run_func(opt, &p1, &p2);
 
 	return 0;

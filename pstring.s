@@ -98,5 +98,29 @@ swapCase: 							#option 53
     ret	
 ###########################################################################
 pstrijcmp: 					#option 54
+	#pstr1 in RDI, pstr2 in RSI, i in EDX, j in ECX
+	addq $1, %rdi						#delete the len from pstr1
+	addq $1, %rsi						#delete the len from pstr2
 	
-    ret	
+	xorq %rax, %rax					#init rax
+	xorq %rbx, %rbx					#init rbx
+.loope:
+	movb (%rdx,%rdi),	%al		#take pstr1[i] to al (rax)
+	movb (%rdx,%rsi),	%bl		#take pstr2[i] to bl (rbx)
+	addl $1, %edx						#i++
+	cmpb %al, %bl						#if al=bl
+	je .equ
+	cmpb %al, %bl						#if al<bl
+	jg .pstr2big							#pstr2 bigger
+	movq $1, %rax						#return 1
+	jmp .ende
+.pstr2big:
+	movq $-1, %rax					#return -1
+	jmp .ende
+.equ:
+	cmpl %edx, %ecx					#if i<j
+	jg .loope
+	movq $0, %rax						#return 0
+.ende:
+	ret	
+##############################################################################
