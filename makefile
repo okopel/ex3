@@ -1,7 +1,7 @@
 a.out: 	main.o func_select.o pstring.o
 	gcc -g -o a.out main.o func_select.o pstring.o
 	./a.out
-main.o: main-test.c pstring.h
+main.o: main.s pstring.h
 	gcc -g -c -o main.o main-test.c
 
 func_select.o: func_select.s pstring.h

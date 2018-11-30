@@ -1,17 +1,18 @@
 #ori kopel 205533151
 #print convention: RDI, RSI, RDX, RCX, R8, R9
 .section .rodata
-strlenP: 				.string 		"first pstring length: %d, second pstring length: %d\n"
-replaceCharP :	.string 			"old char: %c, new char: %c, first string: %s, second string: %s\n"
-pof52:					.string 		"length: %d, string: %s\nlength: %d, string: %s\n"
-scanC: 				.string 		"\n%c %c"
-scanNums :		.string 			"\n%d\n%d"
-errormsg: 			.string 			"invalid option!\n"
-print:					.string		"f:%d, s:%d\n"
-print1:					.string		"f:%d\n"
-swapP:				.string 			"length: %d, string: %s\nlength: %d, string: %s\n"
-cmpP:				.string 			"compare result: %d\n"
-errorcp:			.string			"invalid input!\ncompare result: %d\n"
+strlenP: 				.string 			"first pstring length: %d, second pstring length: %d\n"
+replaceCharP :		.string 			"old char: %c, new char: %c, first string: %s, second string: %s\n"
+pof52:					.string 			"length: %d, string: %s\nlength: %d, string: %s\n"
+scanC: 				.string 			"\n%c %c"
+scanNums :			.string 			"\n%d\n%d"
+errormsg: 				.string 			"invalid option!\n"
+print:					.string			"f:%d, s:%d\n"
+print1:					.string			"f:%d\n"
+swapP:					.string 			"length: %d, string: %s\nlength: %d, string: %s\n"
+cmpP:					.string 			"compare result: %d\n"
+errorcp:				.string			"invalid input!\ncompare result: %d\n"
+erop:					.string 			"invalid option!\n"
 .L10:
     .quad .L0 #option 50
     .quad .L1 #option 51
@@ -23,14 +24,14 @@ errorcp:			.string			"invalid input!\ncompare result: %d\n"
 .text
 .global run_func
 run_func:
-	pushq	%rbp		#save the old frame pointer
+	pushq	%rbp			#save the old frame pointer
     mov	%rsp,	%rbp	#create the new frame pointer
-###############start of code
+############################################start of code
 
 
 	leaq -50(%rdi),%rdi 			#the operation num comes in RDI
 	cmpq $4, %rdi   				#compare xi:4 becouse our range is 51/52/53/54
-    ja .L5  								#big than 4 so go to default
+    ja .L6  								#big than 4 so go to default
    
 	jmp *.L10(,%rdi,8) 			#goto write case
 	ret
@@ -242,7 +243,7 @@ jmp .L5
 	cmpl %eax, %edx			#check if pstrlen2 < j
 	jg .errorc						#jump to error
 	movq %rax, %r11			#save pstr2len.
-			#####end of validation######
+			######end of validation######
 			
 	xorq %rcx, %rcx			#init RCX for the char
 	movl %edx, %ecx			#move j to ecx (par 4) 
@@ -266,7 +267,13 @@ jmp .L5
 	jmp .L5
 ###########################################################################
 .L5: 					#done
-    movq	$0, %rdi	#return value is zero
-    movq	%rbp, %rsp	#restore the old stack pointer - release all used memory.
-    pop	%rbp		#restore old frame pointer (the caller function frame)
+    movq	$0, %rdi			#return value is zero
+    movq	%rbp, %rsp		#restore the old stack pointer - release all used memory.
+    pop	%rbp					#restore old frame pointer (the caller function frame)
     ret	
+#########################################################################
+.L6:			#Error in operation
+	movq $erop, %rdi
+	xorq %rax, %rax
+	call print
+	jmp .L5
