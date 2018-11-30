@@ -9,6 +9,7 @@ scanNums :		.string 		"\n%d\n%d"
 errormsg: 			.string 		"invalid option!\n"
 print:					.string		"f:%d, s:%d\n"
 print1:					.string		"f:%d\n"
+swapP:				.string "length: %d, string: %s\n"
 .L10:
     .quad .L0 #option 50
     .quad .L1 #option 51
@@ -161,7 +162,13 @@ jmp .L5
 
 .L3: 											#option 53
 
-call swapCase
+	xorq %rax, %rax
+	call swapCase
+	movq (%rsi), %rsi
+	movq %rax, %rdx
+	movq $swapP ,%rdi
+	xorq %rax, %rax
+	call printf
 
 jmp .L5
 

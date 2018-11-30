@@ -58,7 +58,7 @@ char c[]= "HELLO";
 
 
 	// select which function to run
-	opt=52;
+	opt=53;
 	run_func(opt, &p1, &p2);
 
 	return 0;

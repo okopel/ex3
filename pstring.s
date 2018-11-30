@@ -65,8 +65,35 @@ pstrijcpy: 					#option 52
 	movq %rdi, %rax					#preper return
     ret	
 
-swapCase: 				#option 53
+swapCase: 							#option 53
+	movq $0, %r8					#inition r8 to i=0
+.loop3:
+	incq %r8							#i++
+	movb (%rdi,%r8), %cl		#take pstr[i] to cl (rcx). i=0 is the len.
+	cmpb $0, %cl					#check if our char is "\0" (=end of word)
+	je .endReplacing2				#if yes -> jump to end
+	cmpb $65, %cl					#if 'A'<= our char
+	jge .ifbig
+	jmp .loop3
+.ifbig:
+	cmpb $90, %cl					#if 'Z'>our char
+	jle .bigCase
+	cmp $122, %cl					#if 'z'>out char
+	jle .litCase
+	jmp .loop3							#our char isnt from the ABC or abc
 	
+.bigCase:
+	addb $32,%cl					#cl+=32 (big to little casting)
+	movb %cl, (%rdi,%r8)		# rdi[i]= new cl
+	jmp .loop3
+	
+.litCase:
+	subb	$32, %cl 					#cl-=32 (little to big casting)
+	movb %cl, (%rdi,%r8)			# rdi[i]= new cl
+	jmp .loop3
+	
+.endReplacing2:
+	movq %rdi, %rax				#move the anster to RAX
     ret	
 
 pstrijcmp: 					#option 54
