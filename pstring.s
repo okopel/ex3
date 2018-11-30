@@ -1,7 +1,6 @@
 .section .data
 
-c1: .int 'a'
-d1: .int 'b'
+s: .string "%s, %s, %d, %d\n"
 
 .text
 
@@ -14,11 +13,10 @@ d1: .int 'b'
 
 
 .type 	pstrlen, @function
-pstrlen: 								# option 50
-											
+pstrlen: 							# option 50
 	xorq %rsi, %rsi				#init RSI
-	movb %al, %sil				#take only LSB to RSI 
-	xorq %rax, %rax				#inition RAX
+	movb %al, %sil				#take only LSB from al (RAX) to sil (RSI) 
+	xorq %rax, %rax			#inition RAX
 	movb %sil, %al				#take RSI to RAX to return value.
 	ret
 	
@@ -44,7 +42,27 @@ replaceChar:				 		#option 51
 
 .type 	pstrijcpy, @function
 pstrijcpy: 					#option 52
+			#pstr1 in RDI, pstr2 in RSI, i in EDX, j in ECX
+	addq $1, %rdi						#delete the len from pstr1
+	addq $1, %rsi						#delete the len from pstr2
 	
+	xorq %r8, %r8						#inition r8
+.loop2:
+	movb (%rdx, %rsi), %r8b		#take the char from rsi[i]
+	movb %r8b, (%rdx, %rdi)		#put tha char in rdi[i]
+	incq  %rdx							#i++
+	cmpl %edx, %ecx					#if i<j
+	jge .loop2								#jump to loop
+	
+	#movq %rcx, %r8
+	#movq %rdx, %rcx
+	#movq %rsi, %rdx
+	#movq %rdi, %rsi
+	#movq $s, %rdi
+	#xorq %rax, %rax
+	#call printf	
+	
+	movq %rdi, %rax					#preper return
     ret	
 
 swapCase: 				#option 53

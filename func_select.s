@@ -3,6 +3,7 @@
 .section .rodata
 strlenP: 				.string 		"first pstring length: %d, second pstring length: %d\n"
 replaceCharP :	.string 		"old char: %c, new char: %c, first string: %s, second string: %s\n"
+pof52:					.string 		"length: %d, string: %s\nlength: %d, string: %s\n"
 scanC: 				.string 		"\n%c %c"
 scanNums :		.string 		"\n%d\n%d"
 errormsg: 			.string 		"invalid option!\n"
@@ -26,9 +27,9 @@ run_func:
 
 	leaq -50(%rdi),%rdi 			#the operation num comes in RDI
 	cmpq $4, %rdi   				#compare xi:4 becouse our range is 51/52/53/54
-    ja .L5  									#big than 4 so go to default
+    ja .L5  								#big than 4 so go to default
    
-	jmp *.L10(,%rdi,8) 				#goto write case
+	jmp *.L10(,%rdi,8) 			#goto write case
 	ret
 	
 	
@@ -36,18 +37,19 @@ run_func:
 
 	xorq %rax, %rax 		#inition RAX
 	movq (%rsi), %rax	#move the first pstring to RAX
-	call pstrlen					#check the len
+	call pstrlen				#check the len
 	movq %rax, %r12 	#save the answer from RAX for later.
 	
 	xorq %rax, %rax 		#inition RAX
 	movq (%rdx), %rax	#move the second pstring to RAX
-	call pstrlen					#check the len
-
-	movq %r12,%rdx		#restore the first len in order to print
+	call pstrlen				#check the len
+	movq %rax, %rdx		#save the answer in RDX in order to print second
+	
+	movq %r12,%rsi		#restore the first len in order to print first
 	xorq %r12, %r12		#inition the R12 after using.
 	mov $strlenP, %rdi 	#format to RDI
-	xorq %rax, %rax			#init RAX
-	call printf						#print
+	xorq %rax, %rax		#init RAX
+	call printf					#print
 	
 jmp .L5			#done
 
@@ -84,62 +86,72 @@ jmp .L5			#done
 jmp .L5
 
 	
-.L2: #option 52
+.L2: 							#option 52
 
 	movq %rsi, %r12					#backUp pstr1
 	movq %rdx, %r13					#backUp pstr2
-	xorq %rax, %rax						#init RAX
+	xorq %rax, %rax					#init RAX
 	xorq %rdi, %rdi						#init RDI
-	subq $16, %rsp						#allocate place to the nums(4/8 bytes per num)
-	movq $scanNums, %rdi		#scanf format
+	subq $16, %rsp						#allocate place to the nums(8 bytes per num)
+	movq $scanNums, %rdi			#scanf format
 	leaq 8(%rsp), %rsi				#RSI point to place of the first scanf
 	movq %rsp, %rdx					#RDX point to place of the second scanf
 	call scanf
 	movq (%rsp), %rdx				#take the value of j to RDX
 	movq 8(%rsp), %rsi				#take the value of i to RSI
-	
-	#movq $print1, %rdi
-	#xorq %rax, %rax
-	#call printf
-	#jmp .endof52
-	
+		
 	#start of validation#
-#	cmpl $0, %esi						#check if i<=0
-#	jl .error									#jump to error
-#	cmpl $0, %edx						#check if j<0
-#	jl .error									#jump to error
-#	cmpl %edx, %esi					#check if j<i , edx<esi
-#	jg .error									#jump to error
+	cmpl $0, %esi						#check if i<=0
+	jl .error									#jump to error
+	cmpl $0, %edx						#check if j<0
+	jl .error									#jump to error
+	cmpl %edx, %esi					#check if j<i , edx<esi
+	jg .error								#jump to error
+
+	movq %rsi, %r11					#save RSI (=i) in r11
 	
 	xorq %rax, %rax 					#inition RAX
-	movq (%r12), %rax				#move the first pstring to RAX
-	call pstrlen								#check the len
+	movq (%r12), %rax				#move pstring1 to RAX
+	call pstrlen							#check the len
 	
-	#xorq %rsi, %rsi
-	#movb %al, %sil
-	#movq $print1, %rdi
-	#xorq %rax, %rax
-	#call printf
-
-	#movq %rax, %r14 	#save the answer from RAX for later.
-	#cmpl %r14d, %edx	#check if pstrlen1 < j
-	cmpb %al, %dl	#check if pstrlen1 < j
+	cmpl %eax, %edx			#check if pstrlen1 < j
 	jg .error						#jump to error
 	
-#	xorq %rax, %rax 		#inition RAX
-#	movq %r13, %rax		#move the second pstring to RAX
-#	call pstrlen					#check the len
-#	movq %rax, %r15 	#save the answer from RAX for later.
-#	cmpq %r15, %rdx	#check if j>pstrlen2
-#	jg .error
-										#end of validation#
+	movq %rax, %r14			#save pstr1Len in R14
 	
-	#xorq %rax, %rax			#inition rax
-	#call pstrijcpy
+	xorq %rax, %rax 			#inition RAX
+	movq (%r13), %rax		#move the second pstring to RAX
+	call pstrlen					#check the len
 	
+	movq %r11, %rsi			#move i (r11) to
+	
+	cmpl %eax, %edx			#check if pstrlen2 < j
+	jg .error						#jump to error
+	movq %rax, %r11			#save pstr2len.
+			#####end of validation######
+			
+	xorq %rcx, %rcx			#init RCX for the char
+	movl %edx, %ecx			#move j to ecx (par 4) 
+	xorq %rdx, %rdx			#init RDX for the char
+	movl %esi, %edx			#move i to edx (par 3)
+	movq %r12, %rdi			#move pstr1 (par 1)
+	movq %r13, %rsi			#move pstr2 (par 2)
+	
+	xorq %rax, %rax			#inition rax
+	call pstrijcpy
+	#movq %rax,%r12
+	
+	movq %rax, %rdx			#move the answer to RDX
+	movq %r14, %rsi			#move pstr1Len to RSi
+	movq %r11 ,%rcx				#mov pstr2len to rcx
+	movq %r13 , %r8			#move pstr2 to r8
+	movq $pof52, %rdi		#move print format to RDI
+	xorq %rax, %rax			#inition rax
+	call printf
+		
 	jmp .endof52
-.error:											#Error in validation
-	movq $errormsg, %rdi
+.error:								#Error in validation
+	movq $errormsg, %rdi	#format print to RDI
 	xorq %rax, %rax
 	call printf
 
@@ -147,7 +159,7 @@ jmp .L5
 	addq $8, %rsp						#restore the original RSP
 jmp .L5
 
-.L3: #option 53
+.L3: 											#option 53
 
 call swapCase
 
