@@ -13,6 +13,7 @@ swapP:					.string 			"length: %d, string: %s\nlength: %d, string: %s\n"
 cmpP:					.string 			"compare result: %d\n"
 errorcp:				.string			"invalid input!\ncompare result: %d\n"
 erop:					.string 			"invalid option!\n"
+testing:					.string			"%d \t %s \t %s\n"
 .L10:
     .quad .L0 #option 50
     .quad .L1 #option 51
@@ -27,8 +28,16 @@ run_func:
 	pushq	%rbp			#save the old frame pointer
     mov	%rsp,	%rbp	#create the new frame pointer
 ############################################start of code
+	
+#RDI, RSI, RDX, RCX
+	#movq %rdx, %rcx
+	#movq %rsi, %rdx
+	#movq %rdi, %rsi
+	#movq $testing, %rdi
+	#xorq %rax, %rax
+	#call printf
 
-
+###################################################
 	leaq -50(%rdi),%rdi 			#the operation num comes in RDI
 	cmpq $4, %rdi   				#compare xi:4 becouse our range is 51/52/53/54
     ja .L6  								#big than 4 so go to default
@@ -66,7 +75,7 @@ jmp .L5							#done
 	xorq %rdi, %rdi						#init RDI
 	movq $scanC, %rdi				#scanf format
 	subq $2, %rsp						#allocate place to the chars
-	leaq 1(%rsp), %rsi					#RSI point to place of the first scanf
+	leaq 1(%rsp), %rsi				#RSI point to place of the first scanf
 	movq %rsp, %rdx					#RDX point to place of the second scanf
 	call scanf
 	movq 1(%rsp), %rsi
@@ -277,3 +286,4 @@ jmp .L5
 	xorq %rax, %rax
 	call print
 	jmp .L5
+	
