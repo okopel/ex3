@@ -1,10 +1,7 @@
 #ori kopel 205533151
 .section .rodata
-
 input: 		.string		 "%d"
 input2: 		.string		 "\n%s"
-
-
 ftest:	.string "%s\n"
 .text
 .global main
@@ -24,7 +21,6 @@ main:
 	xorq 			%rax, %rax			#init rax
 	call scanf								#scan len1
 	movzbq 	(%rsp), %r12		#save pstr1len in R12
-		
 	addq 		$7, %rsp				#take it 7up in order to selete the '\0'
 	subq 		%r12, %rsp			#place to get pstr1
 	movq 		$input2, %rdi			#set the print format
@@ -65,8 +61,6 @@ main:
 	movq		%rsp, %rsi			#RSI point to place of the scanf
 	call scanf								#scan op num
 	movzbq 	(%rsp), %rdi		#save op num in RDI (first parameter to run_func)
-	
-	
 	
 	movq 	%r13, %rsi			#len1+pstr1
 	movq 	%r14, %rdx			#len2+pstr2

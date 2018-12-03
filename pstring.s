@@ -1,7 +1,6 @@
 #ori kopel 205533151
 .section .data
 .text
-
 .global pstrlen
 .global replaceChar
 .global pstrijcpy
@@ -11,7 +10,7 @@
 ###################################################################
 .type 	pstrlen, @function
 pstrlen: 						# option 50
-	xorq		 %rsi, %rsi	#init RSI
+	xorq		%rsi, %rsi		#init RSI
 	movb	%al, %sil		#take only LSB from al (RAX) to sil (RSI) 
 	xorq 		%rax, %rax	#inition RAX
 	movb	%sil, %al		#take RSI to RAX to return value.
@@ -24,9 +23,9 @@ replaceChar:				#option 51
 .loop:
 	movb 	(%r8, %rdi), %cl	# take the next char from RDI[i] to CL
 	cmpb 	$0, %cl					#check if our char is "\0" (=end of word)
-	je 		.endReplacing		#if yes -> jump to end
+	je 			.endReplacing		#if yes -> jump to end
 	cmpb 	%cl, %sil				#else -> check if our char is the old char
-	je 		.rep						#if yes -> jump to replace
+	je 			.rep						#if yes -> jump to replace
 	jmp 		.cont						#continiu without replacing
 .rep:
 	movb 	%dl, (%r8,%rdi)	#put New char.
@@ -61,14 +60,14 @@ swapCase: 					#option 53
 	addq	 	$1,%r8					#i++
 	movb 	(%r8,%rdi), %cl	#take pstr[i] to cl (rcx). i=0 is the len.
 	cmpb 	$0, %cl					#check if our char is "\0" (=end of word)
-	je 		.endReplacingb		#if yes -> jump to end
+	je 			.endReplacingb		#if yes -> jump to end
 	cmpb 	$65, %cl				#if 'A'<= our char
 	jge 		.ifbig
 	jmp 		.loopb
 .ifbig:
 	cmpb 	$90, %cl			#if 'Z'>our char
 	jle 		.bigCase
-	cmp 	$122, %cl			#if 'z'>out char
+	cmp 		$122, %cl			#if 'z'>out char
 	jle 		.litCase
 	jmp 		.loopb				#our char isnt character in english
 .bigCase:
